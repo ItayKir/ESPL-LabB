@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 FILE* outfile = NULL;
+char endian;
 
 typedef struct virus {
     unsigned short SigSize;
@@ -20,15 +21,24 @@ void freeVirus(virus* vir){
 virus* readVirus(FILE* file_ptr){
     virus* vir = malloc(sizeof(virus));
     
+    // so freeVirus will not fail if they are not initalized yet
     vir->VirusName = NULL;
     vir->Sig = NULL;
     
     // for size of sig
     size_t ret;
-    ret = fread(&(vir->SigSize), 1, 2, file_ptr);
+    unsigned char tempSigSize[2];
+
+    ret = fread(tempSigSize, 1, 2, file_ptr);
     if(ret < 2){
         freeVirus(vir);
         return NULL;
+    }
+
+    if(endian=='B'){ //Took the bitwise operation from Gemini
+        vir->SigSize = (tempSigSize[0] << 8) | tempSigSize[1];
+    } else {
+        vir->SigSize = tempSigSize[0] | (tempSigSize[1] << 8);
     }
 
     // for name
@@ -65,16 +75,21 @@ int checkMagicNumber(FILE* file_ptr, unsigned char* buffer){
         fprintf(outfile, "ERROR: file shorter than 4 bytes.");
         return 1;
     }
-    if(memcmp(buffer, "VIRL", 4)==0 || memcmp(buffer, "VIRB", 4)==0){
+    if(memcmp(buffer, "VIRL", 4)==0){
+        endian = 'L';
         return 0;
     }
+    if(memcmp(buffer, "VIRB", 4)==0){
+        endian = 'B';
+        return 0;
+    }    
     fprintf(outfile, "ERROR: magic number is not VIRL or VIRB");
     return 1;
 
 }
 
 int main(int argc, char** argv){
-    outfile = stdout;
+    outfile = fopen("lab3_out_compare.txt", "wr");
     if (argc < 2){
         printf("Provided argument for the file!\n"); 
         return 1;
