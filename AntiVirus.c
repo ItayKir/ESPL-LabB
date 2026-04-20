@@ -225,11 +225,37 @@ struct link* detectViruses(struct link* virus_list){
     detect_virus(buffer, size_read, virus_list);
 
     fclose(file_ptr);
-    return virus_list; // Return the list untouched
+    return virus_list; 
+}
+
+void neutralize_virus(char *fileName, int signatureOffset){
+    FILE* file_ptr = fopen(fileName, "r+b");
+    fseek(file_ptr, signatureOffset ,SEEK_SET);
+    unsigned char ret = 0xC3;
+    fwrite(&ret, sizeof(unsigned char), 1, file_ptr);
+    fclose(file_ptr);
 }
 
 struct link* fixFile(struct link* virus_list){
-    printf("not implemented\n");
+    char buffer[10000];
+    FILE* file_ptr = fopen(suspected_file, "rb");
+    unsigned int size_read = fread(buffer, 1, 10000, file_ptr);
+
+    for (unsigned int i = 0; i < size_read; i++) {
+        
+        struct link* current = virus_list;
+        
+        while (current != NULL) {
+            unsigned short sig_len = current->vir->SigSize;
+            if (i + sig_len <= size_read) {
+                if (memcmp(&buffer[i], current->vir->Sig, sig_len) == 0) {
+                    neutralize_virus(suspected_file, i);
+                }
+            }
+            current = current->nextVirus;
+        }
+    }
+    fclose(file_ptr);
     return virus_list;
 }
 
