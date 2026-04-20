@@ -1,16 +1,10 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-all: bubblesort hexaPrint virusDetector
+all: AntiVirus
 
-bubblesort: lab3_bubblesort.c
-	$(CC) $(CFLAGS) -o bubblesort lab3_bubblesort.c
-
-hexaPrint: hexaPrint.c
-	$(CC) $(CFLAGS) -o hexaPrint hexaPrint.c
-
-virusDetector: virusDetector.c
-	$(CC) $(CFLAGS) -o virusDetector virusDetector.c
+AntiVirus: AntiVirus.c
+	$(CC) $(CFLAGS) -o AntiVirus AntiVirus.c
 
 clean:
-	rm -f bubblesort hexaPrint virusDetector
+	rm -f AntiVirus
