@@ -1,0 +1,51 @@
+Starting byte location: 22
+Virus name: Storm
+Virus signature size: 80
+
+Starting byte location: 120
+Virus name: Devil
+Virus signature size: 51
+
+Starting byte location: 189
+Virus name: Anyno
+Virus signature size: 64
+
+Starting byte location: 271
+Virus name: Virus
+Virus signature size: 32
+
+Starting byte location: 321
+Virus name: Flame
+Virus signature size: 48
+
+Starting byte location: 387
+Virus name: worm
+Virus signature size: 25
+
+Starting byte location: 430
+Virus name: Doom
+Virus signature size: 19
+
+Starting byte location: 467
+Virus name: IAmAVirus
+Virus signature size: 11
+
+Starting byte location: 496
+Virus name: Vir
+Virus signature size: 3
+
+Starting byte location: 517
+Virus name: lab3vir
+Virus signature size: 5
+
+Starting byte location: 540
+Virus name: Biggie
+Virus signature size: 300
+
+Starting byte location: 541
+Virus name: lab3vir
+Virus signature size: 5
+
+Starting byte location: 797
+Virus name: lab3vir
+Virus signature size: 5

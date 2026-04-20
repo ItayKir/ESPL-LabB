@@ -5,6 +5,8 @@
 
 FILE* outfile = NULL;
 char endian;
+char suspected_file[256] = "";
+
 
 typedef struct virus {
     unsigned short SigSize;
@@ -148,7 +150,7 @@ struct link* loadSignatures(struct link* virus_list){
     FILE* file_ptr= fopen(fileName, "rb");
     unsigned char magicNumber[4];
     if (!file_ptr){
-        printf("Can't open file - not loading.\n");
+        printf("ERROR: Can't open file - not loading.\n");
         return NULL;
     }
     if(checkMagicNumber(file_ptr, magicNumber) == 1){
@@ -174,14 +176,56 @@ struct link* printSignatures(struct link* virus_list){
     return virus_list;
 }
 
-struct link* fileInspect(struct link* virus_list){
-    printf("not implemented\n");
+struct link* fileInspect(struct link* virus_list) {
+    printf("Enter file name: \n");
+    char buff[256];
+    fgets(buff, sizeof(buff), stdin);
+    sscanf(buff, "%s", suspected_file);
     return virus_list;
 }
 
+
+// helper function, function from main calls this function with size and a buffer
+void detect_virus(char *buffer, unsigned int size, struct link *virus_list) {
+    for (unsigned int i = 0; i < size; i++) {
+        
+        struct link* current = virus_list;
+        
+        while (current != NULL) {
+            unsigned short sig_len = current->vir->SigSize;
+            if (i + sig_len <= size) {
+                if (memcmp(&buffer[i], current->vir->Sig, sig_len) == 0) {
+                    printf("Starting byte location: %d\n", i);
+                    printf("Virus name: %s\n", current->vir->VirusName);
+                    printf("Virus signature size: %d\n\n", sig_len);
+                }
+            }
+            current = current->nextVirus;
+        }
+    }
+}
+
+
 struct link* detectViruses(struct link* virus_list){
-    printf("not implemented\n");
-    return virus_list;
+    if (strlen(suspected_file) == 0) {
+        printf("ERROR: No file selected.\n");
+        return virus_list;
+    }
+
+    FILE* file_ptr = fopen(suspected_file, "rb");
+    if (!file_ptr) {
+        printf("ERROR: Cannot open suspected file.\n");
+        return virus_list;
+    }
+
+    char buffer[10000];
+    
+    unsigned int size_read = fread(buffer, 1, 10000, file_ptr);
+
+    detect_virus(buffer, size_read, virus_list);
+
+    fclose(file_ptr);
+    return virus_list; // Return the list untouched
 }
 
 struct link* fixFile(struct link* virus_list){
@@ -194,6 +238,8 @@ struct link* quit(struct link* virus_list){
     exit(0);
     return NULL;
 }
+
+
 
 
 //from lab1
@@ -248,7 +294,7 @@ int main(int argc, char** argv){
             i++;
         }
         if(menu[i].name == NULL){
-            fputs("function not supported!\n", outfile);
+            fputs("ERROR: function not supported!\n", outfile);
         }
     }
 }
